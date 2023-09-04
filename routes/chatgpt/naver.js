@@ -1,6 +1,101 @@
+const fs = require("fs");
+const AWS = require("aws-sdk");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const sharp = require("sharp");
+const env = require("dotenv").config().parsed;
+const moment = require("moment");
+
+const getRewritePost = async (obj) => {
+  console.log(obj.content);
+  return new Promise((resolve, reject) => {
+    axios
+      .post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-3.5-turbo",
+          // messages: [
+          //   {
+          //     role: "user",
+          //     content: `${obj.content} 위의 내용을 재작성 해줘`,
+          //     // content: `hello~`,
+          //   },
+          // ],
+          messages: [
+            {
+              role: "user",
+              content: `hello~`,
+            },
+            {
+              role: "user",
+              content: `what is your name?`,
+            },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => {
+        const { data } = res;
+        console.log(data);
+        if (data) {
+          resolve(data.choices[0].message);
+        }
+      });
+  });
+};
+
+const imageS3Upload = async (imageUrl) => {
+  const s3 = new AWS.S3({
+    accessKeyId: env.NEWSTIZ_ACCESS_KEY_ID,
+    secretAccessKey: env.NEWSTIZ_ASECRET_KEY_ID,
+  });
+  const imageFilename = "output_image.png";
+
+  // 이미지 다운로드 후 리사이징 아래 로고를 자른다.
+  const input = (await axios({ url: imageUrl, responseType: "arraybuffer" }))
+    .data;
+
+  const imageInfo = await sharp(input);
+  const imageMetadata = await imageInfo.metadata();
+  const imageResizeWidth = imageMetadata.width;
+  const imageResizeHeight = imageMetadata.height - 60;
+
+  await sharp(input)
+    .resize({
+      width: imageResizeWidth,
+      height: imageResizeHeight,
+      position: "left top",
+    })
+    .toFile(imageFilename);
+
+  const imagePath = `${__dirname}/../..`;
+  const imageData = fs.readFileSync(`${imagePath}/${imageFilename}`);
+  return new Promise((resolve, reject) => {
+    s3.upload(
+      {
+        Bucket: env.BUCKET_NAME,
+        Key: `${moment().format("YYYY")}/${moment().format(
+          "MM-DD"
+        )}/img_${new Date().getTime()}_${imageFilename}`,
+        Body: imageData,
+      },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          reject("");
+        } else {
+          resolve(data.Location);
+          console.log(`File uploaded successfully. ${data.Location}`);
+        }
+      }
+    );
+  });
+};
 
 const getNaverTopNewsLink = async (req, res, next) => {
   try {
@@ -53,44 +148,22 @@ const getNaverNewsContent = async (req, res, next) => {
     const content = contentArea.html();
     // const description = $("meta").attr("description").text();
 
-    // 이미지 다운로드 후 리사이징 아래 로고를 자른다.
-    const input = (await axios({ url: imageUrl, responseType: "arraybuffer" }))
-      .data;
+    // const s3ImageUrl = await imageS3Upload(imageUrl);
+    const s3ImageUrl = "";
 
-    const imageInfo = await sharp(input);
-    const imageMetadata = await imageInfo.metadata();
-    const imageResizeWidth = imageMetadata.width;
-    const imageResizeHeight = imageMetadata.height - 60;
-    // console.log(imageMetadata.width, imageMetadata.height);
+    console.log(s3ImageUrl);
 
-    // const output = await sharp(input).png().toBuffer();
-    const output = await sharp(input)
-      .resize({
-        width: imageResizeWidth,
-        height: imageResizeHeight,
-        position: "left top",
-      })
-      .toFile("output_image.png");
+    const items = {
+      title,
+      s3ImageUrl,
+      strongText,
+      content,
+    };
+    const reWriteItems = await getRewritePost(items);
 
-    console.log(input);
-    // console.log(output);
+    console.log(reWriteItems);
 
-    console.log(imageUrl);
-    console.log(title);
-    console.log(strongText);
-    // console.log(description);
-    // const items = $(".news_wrap");
-    // const items = $(".news_wrap");
-
-    // const links = [];
-    // for (let item of items) {
-    //   const link = item.children[2].attribs.href;
-    //   links.push(link);
-    // }
-
-    return res
-      .status(200)
-      .send({ status: "ok", items: { title, imageUrl, strongText, content } });
+    return res.status(200).send({ status: "ok", items });
   } catch (e) {
     console.log(e);
     return next({
