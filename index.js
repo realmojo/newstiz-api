@@ -1,10 +1,16 @@
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
 
 const app = express();
 const port = 3001;
+
+mongoose
+  .connect("mongodb://127.0.0.1:27017/newstiz")
+  .then(() => console.log("Connected!"));
 app.use(cors());
 app.use("/api/chatgpt", require("./routes/chatgpt"));
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

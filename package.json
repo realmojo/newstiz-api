@@ -23,8 +23,11 @@
     "fetch": "^1.1.0",
     "fs": "^0.0.1-security",
     "moment": "^2.29.4",
+    "mongoose": "^7.5.0",
+    "mongoose-sequence": "^5.3.1",
     "openai": "^3.3.0",
-    "sharp": "^0.32.5"
+    "sharp": "^0.32.5",
+    "shortid": "^2.2.16"
   },
   "bugs": {
     "url": "https://github.com/realmojo/newstiz-api/issues"
