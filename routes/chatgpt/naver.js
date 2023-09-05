@@ -5,8 +5,17 @@ const cheerio = require("cheerio");
 const sharp = require("sharp");
 const env = require("dotenv").config().parsed;
 const moment = require("moment");
-const postSchema = require("../../schemas/Posts");
-console.log(postSchema);
+const Post = require("../../schemas/Posts");
+const { randomUser } = require("./constants");
+
+const getRandomNumber = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+const getRandomUser = () => {
+  return randomUser[getRandomNumber(0, getRandomNumber.length)];
+};
+
 const shuffle = (array) => {
   array.sort(() => Math.random() - 0.5);
 };
@@ -16,39 +25,46 @@ const shuffle = (array) => {
 const getRewritePost = async (obj) => {
   console.log(obj);
   return new Promise((resolve, reject) => {
-    const content = `한국 유튜버가 발언한 "1920년대 일본이 한글 보급 지원"이라는 주장은 논란을 일으키고 있습니다. 해당 발언은 일본 언론에도 보도되며 논란의 중심에 있습니다. 유튜버 '용호수' 운영자인 용찬우씨의 과거 발언은 AFPBB를 통해 일본어 기사로 보도되었습니다. 이 영상에서 용씨는 1920년대 일본이 한글을 보급하기 위해 조선인들을 일꾼이나 노예로 사용하기 위해 최소한의 지식을 제공했다고 주장하였습니다. 또한 한문은 동아시아의 공용어이며, 한글은 한국의 것이라는 주장을 매국적이라고 비판하였습니다. 용씨는 더 나아가 "번역기로는 가치 있는 지식을 해석할 수 없으며, 고급 어휘는 음성과 이미지를 통해 이해되어야 한다"고 주장하였습니다. 그는 또한 한글을 조선 왕, 세종이 만든 발음기호로 정의짓고, 한글이 우리의 언어가 아니라면 한글을 사용하는 한국인은 미개한 민족이 된다고 말하였습니다. 이러한 발언은 일본 현지의 기사에서도 동조되며, 한글 비하 댓글도 달렸습니다. 이에 대해서는 여러 의견이 분분하게 제기되고 있습니다.`;
+    // const content = `한국 유튜버가 발언한 "1920년대 일본이 한글 보급 지원"이라는 주장은 논란을 일으키고 있습니다. 해당 발언은 일본 언론에도 보도되며 논란의 중심에 있습니다. 유튜버 '용호수' 운영자인 용찬우씨의 과거 발언은 AFPBB를 통해 일본어 기사로 보도되었습니다. 이 영상에서 용씨는 1920년대 일본이 한글을 보급하기 위해 조선인들을 일꾼이나 노예로 사용하기 위해 최소한의 지식을 제공했다고 주장하였습니다. 또한 한문은 동아시아의 공용어이며, 한글은 한국의 것이라는 주장을 매국적이라고 비판하였습니다. 용씨는 더 나아가 "번역기로는 가치 있는 지식을 해석할 수 없으며, 고급 어휘는 음성과 이미지를 통해 이해되어야 한다"고 주장하였습니다. 그는 또한 한글을 조선 왕, 세종이 만든 발음기호로 정의짓고, 한글이 우리의 언어가 아니라면 한글을 사용하는 한국인은 미개한 민족이 된다고 말하였습니다. 이러한 발언은 일본 현지의 기사에서도 동조되며, 한글 비하 댓글도 달렸습니다. 이에 대해서는 여러 의견이 분분하게 제기되고 있습니다.`;
 
-    const splitData = content.split(". ");
-    const pHtml = splitData.map((item) => `<p>${item}</p>`);
-    console.log(pHtml);
+    // const splitData = content.split(". ");
+    // const pHtml = splitData.map((item) => `<p>${item}</p>`);
+    // console.log(pHtml);
 
-    resolve(pHtml);
-    // axios
-    //   .post(
-    //     "https://api.openai.com/v1/chat/completions",
-    //     {
-    //       model: "gpt-3.5-turbo",
-    //       messages: [
-    //         {
-    //           role: "user",
-    //           content: `${obj.content} 위의 내용을 재작성 해줘`,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-    //         "Content-Type": "application/json",
-    //       },
-    //     }
-    //   )
-    //   .then((res) => {
-    //     const { data } = res;
-    //     console.log(data);
-    //     if (data) {
-    //       resolve(data.choices[0].message);
-    //     }
-    //   });
+    // resolve(pHtml);
+    axios
+      .post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "user",
+              content: `${obj.content} 위의 내용을 재작성 해줘`,
+            },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${env.OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => {
+        const { data } = res;
+        console.log(data);
+        if (data) {
+          const content = data.choices[0].message.content;
+          console.log(content);
+          const splitData = content.split(". ");
+          const pHtml = splitData.map((item) => `<p>${item}</p>`);
+          console.log(pHtml);
+
+          resolve(pHtml);
+          // resolve();
+        }
+      });
   });
 };
 
@@ -144,7 +160,7 @@ const getNaverNewsContent = async (req, res, next) => {
     const title = $("title").text();
     const imageUrl = $("#img1")[0].attribs["data-src"];
     const strongText = $("#dic_area > strong").html();
-    const strongTextArr = strongText.split("<br>");
+    const strongTextArr = strongText ? strongText.split("<br>") : [];
     shuffle(strongTextArr);
 
     contentArea.find(".end_photo_org").remove();
@@ -167,23 +183,36 @@ const getNaverNewsContent = async (req, res, next) => {
 
     // console.log(reWriteItems);
 
+    const randomUserInfo = getRandomUser();
     const params = {
-      category: "money",
+      // _id: new Date().getTime(),
+      category: "world",
       logo: s3ImageUrl,
       title: title,
       subTitle: strongTextArr,
       content: reWriteItems,
-      tags: ["돈", "사회 경제"],
-      editor: "김민영",
-      email: "asdf@newstiz.com",
+      tags: ["세계", "사회 경제"],
+      editor: randomUserInfo.editor,
+      email: randomUserInfo.email,
       regdate: moment().format("YYYY-MM-DD HH:mm"),
     };
 
-    console.log(params);
+    // console.log(params);
 
-    const a = new postSchema(params);
-    console.log(a);
-    a.save();
+    const newPost = new Post(params);
+    const result = await newPost.save();
+    console.log(result, "result");
+
+    // _id: { type: Number, require: true, unique: true, index: true },
+    // category: { type: String, require: true, trim: true },
+    // logo: { type: String, require: true, trim: true },
+    // title: { type: String, require: true, trim: true },
+    // subTitle: { type: [String], trim: true },
+    // content: { type: [String], require: true, trim: true },
+    // tags: { type: [String], require: true, trim: true },
+    // editor: { type: String, require: true, trim: true },
+    // email: { type: String, require: true, trim: true },
+    // regdate: { type: String, require: true, trim: true },
     // console.log("dd", d);
     return res.status(200).send({ status: "ok", items });
   } catch (e) {
