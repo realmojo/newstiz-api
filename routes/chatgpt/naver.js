@@ -6,19 +6,7 @@ const sharp = require("sharp");
 const env = require("dotenv").config().parsed;
 const moment = require("moment");
 const Post = require("../../schemas/Posts");
-const { randomUser } = require("./constants");
-
-const getRandomNumber = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-const getRandomUser = () => {
-  return randomUser[getRandomNumber(0, getRandomNumber.length)];
-};
-
-const shuffle = (array) => {
-  array.sort(() => Math.random() - 0.5);
-};
+const { getNextSequence, getRandomUser, shuffle } = require("./common");
 
 // const split = data.split("\n");
 // console.log(split);
@@ -185,7 +173,7 @@ const getNaverNewsContent = async (req, res, next) => {
 
     const randomUserInfo = getRandomUser();
     const params = {
-      // _id: new Date().getTime(),
+      _id: await getNextSequence("postId"),
       category: "world",
       logo: s3ImageUrl,
       title: title,

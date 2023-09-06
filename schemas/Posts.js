@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-auto-increment");
-AutoIncrement.initialize(mongoose.connection);
+// const AutoIncrement = require("mongoose-auto-increment");
+// AutoIncrement.initialize(mongoose.connection);
 
 const postModel = function () {
   const postSchema = new mongoose.Schema(
@@ -21,7 +21,7 @@ const postModel = function () {
     }
   );
 
-  postSchema.plugin(AutoIncrement.plugin, "Post");
+  // postSchema.plugin(AutoIncrement.plugin, "Post");
   return mongoose.model("Post", postSchema);
 };
 
