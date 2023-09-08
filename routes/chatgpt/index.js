@@ -9,6 +9,6 @@ const naverController = require("./naver");
  */
 
 router.get("/naver/link", naverController.getNaverTopNewsLink);
-router.get("/naver/content", naverController.getNaverNewsContent);
+router.get("/content", gptController.getNewsContent);
 router.get("/keyword", gptController.getKeyword);
 module.exports = router;
