@@ -1,8 +1,8 @@
 const { randomUser } = require("./constants");
-const Counter = require("../../schemas/Counter");
+const Counters = require("../../schemas/Counters");
 
 const getNextSequence = async (name) => {
-  const res = await Counter.findOneAndUpdate(
+  const res = await Counters.findOneAndUpdate(
     { _id: name },
     {
       $inc: {
@@ -11,7 +11,6 @@ const getNextSequence = async (name) => {
     },
     { new: true }
   );
-  console.log(res);
   return res.seq;
 };
 

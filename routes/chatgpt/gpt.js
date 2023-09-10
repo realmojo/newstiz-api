@@ -59,6 +59,7 @@ const getRewritePost = async (obj) => {
           const splitData = content.split(". ");
           const pHtml = splitData.map((item) => {
             item = item.replace("<br>", "");
+            item = item.charAt(item.length - 1) === "." ? item : `${item}.`;
             return `${item}`;
           });
           console.log(pHtml);

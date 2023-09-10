@@ -11,7 +11,7 @@ const counterModel = function () {
     }
   );
 
-  return mongoose.model("Counter", counterSchema);
+  return mongoose.model("Counters", counterSchema);
 };
 
 module.exports = new counterModel();
