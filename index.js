@@ -16,6 +16,7 @@ app.use("/api/newstiz", require("./routes/newstiz"));
 app.use("/api/chatgpt", require("./routes/chatgpt"));
 
 app.listen(port, () => {
+  console.log("start");
   console.log(`Example app listening on port ${port}`);
 });
 
