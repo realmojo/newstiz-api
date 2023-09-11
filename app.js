@@ -1,14 +1,18 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const env = require("dotenv").config().parsed;
+require("dotenv").config().parsed;
 
 const app = express();
 const port = process.env.PORT || 3001;
 console.log(process.env);
+
+// if (process.env.NODE_ENV === "production") {
+// } else {
+// }
 mongoose
   // .connect("mongodb://127.0.0.1:27017/newstiz")
-  .connect(env.MONGODB_URL)
+  .connect(process.env.MONGODB_URL)
   .then(() => console.log("Connected!"));
 app.use(cors());
 app.use("/api/ping", require("./routes/common"));
