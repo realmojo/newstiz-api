@@ -5,7 +5,7 @@ const env = require("dotenv").config().parsed;
 
 const app = express();
 const port = process.env.PORT || 3001;
-
+console.log(env);
 mongoose
   // .connect("mongodb://127.0.0.1:27017/newstiz")
   .connect(env.MONGODB_URL)
