@@ -4,13 +4,15 @@ const mongoose = require("mongoose");
 const env = require("dotenv").config().parsed;
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 mongoose
   // .connect("mongodb://127.0.0.1:27017/newstiz")
   .connect(env.MONGODB_URL)
   .then(() => console.log("Connected!"));
 app.use(cors());
+app.use("/api/ping", require("./routes/common"));
+app.use("/api/newstiz", require("./routes/newstiz"));
 app.use("/api/chatgpt", require("./routes/chatgpt"));
 
 app.listen(port, () => {
