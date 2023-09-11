@@ -9,6 +9,7 @@ const port = process.env.PORT || 3001;
 // if (process.env.NODE_ENV === "production") {
 // } else {
 // }
+console.log(process.env.MONGODB_URL);
 mongoose
   // .connect("mongodb://127.0.0.1:27017/newstiz")
   .connect(process.env.MONGODB_URL)
@@ -19,7 +20,6 @@ app.use("/api/newstiz", require("./routes/newstiz"));
 app.use("/api/chatgpt", require("./routes/chatgpt"));
 
 app.listen(port, () => {
-  console.log("start");
   console.log(`Example app listening on port ${port}`);
 });
 
