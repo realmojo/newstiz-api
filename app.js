@@ -6,14 +6,8 @@ require("dotenv").config().parsed;
 const app = express();
 const port = process.env.PORT || 3001;
 
-// if (process.env.NODE_ENV === "production") {
-// } else {
-// }
 console.log(process.env.MONGODB_URL);
-mongoose
-  // .connect("mongodb://127.0.0.1:27017/newstiz")
-  .connect(process.env.MONGODB_URL)
-  .then(() => console.log("Connected!"));
+mongoose.connect(process.env.MONGODB_URL).then(() => console.log("Connected!"));
 app.use(cors());
 app.use("/api/ping", require("./routes/common"));
 app.use("/api/newstiz", require("./routes/newstiz"));
