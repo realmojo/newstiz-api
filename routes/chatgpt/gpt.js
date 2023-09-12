@@ -24,13 +24,6 @@ const getKeyword = async (req, res, next) => {
 const getRewritePost = async (obj) => {
   console.log(obj);
   return new Promise((resolve, reject) => {
-    // const content = `한국 유튜버가 발언한 "1920년대 일본이 한글 보급 지원"이라는 주장은 논란을 일으키고 있습니다. 해당 발언은 일본 언론에도 보도되며 논란의 중심에 있습니다. 유튜버 '용호수' 운영자인 용찬우씨의 과거 발언은 AFPBB를 통해 일본어 기사로 보도되었습니다. 이 영상에서 용씨는 1920년대 일본이 한글을 보급하기 위해 조선인들을 일꾼이나 노예로 사용하기 위해 최소한의 지식을 제공했다고 주장하였습니다. 또한 한문은 동아시아의 공용어이며, 한글은 한국의 것이라는 주장을 매국적이라고 비판하였습니다. 용씨는 더 나아가 "번역기로는 가치 있는 지식을 해석할 수 없으며, 고급 어휘는 음성과 이미지를 통해 이해되어야 한다"고 주장하였습니다. 그는 또한 한글을 조선 왕, 세종이 만든 발음기호로 정의짓고, 한글이 우리의 언어가 아니라면 한글을 사용하는 한국인은 미개한 민족이 된다고 말하였습니다. 이러한 발언은 일본 현지의 기사에서도 동조되며, 한글 비하 댓글도 달렸습니다. 이에 대해서는 여러 의견이 분분하게 제기되고 있습니다.`;
-
-    // const splitData = content.split(". ");
-    // const pHtml = splitData.map((item) => `<p>${item}</p>`);
-    // console.log(pHtml);
-
-    // resolve(pHtml);
     axios
       .post(
         "https://api.openai.com/v1/chat/completions",
@@ -170,9 +163,12 @@ const getWikitreeContent = async ($) => {
 
 const getNewsContent = async (req, res, next) => {
   try {
-    const { url } = req.query;
+    const { url, category } = req.query;
     if (!url) {
       throw new Error("url parameter");
+    }
+    if (!category) {
+      throw new Error("category parameter");
     }
 
     const response = await axios(url);
@@ -193,7 +189,7 @@ const getNewsContent = async (req, res, next) => {
     const randomUserInfo = getRandomUser();
     const params = {
       _id: await getNextSequence("postId"),
-      category: "world",
+      category,
       logo: items.s3ImageUrl,
       title: items.title,
       subTitle: items.strongTextArr,
@@ -214,10 +210,7 @@ const getNewsContent = async (req, res, next) => {
     // return res.status(200).send({ status: "ok" });
   } catch (e) {
     console.log(e);
-    return next({
-      status: "error",
-      message: e.message,
-    });
+    return res.status(500).send({ status: "err", message: e.message });
   }
 };
 
