@@ -14,7 +14,7 @@ app.use("/api/ping", require("./routes/common"));
 app.use("/api/newstiz", require("./routes/newstiz"));
 app.use("/api/chatgpt", require("./routes/chatgpt"));
 app.use("/", (req, res) => {
-  res.status(200).send("hi !");
+  res.status(200).send("hi!");
 });
 
 app.listen(port, () => {
