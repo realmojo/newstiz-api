@@ -7,9 +7,8 @@ require("dotenv").config().parsed;
 const app = express();
 const port = process.env.PORT || 3001;
 
-console.log(ip.address());
-console.log(process.env.MONGODB_URL);
 mongoose.connect(process.env.MONGODB_URL).then(() => console.log("Connected!"));
+
 app.use(cors());
 app.use("/api/ping", require("./routes/common"));
 app.use("/api/newstiz", require("./routes/newstiz"));
