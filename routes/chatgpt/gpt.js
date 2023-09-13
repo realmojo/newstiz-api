@@ -203,7 +203,6 @@ const getNewsContent = async (req, res, next) => {
     console.log(result, "result");
 
     return res.status(200).send({ status: "ok", items });
-    // return res.status(200).send({ status: "ok" });
   } catch (e) {
     console.log(e);
     return res.status(500).send({ status: "err", message: e.message });
