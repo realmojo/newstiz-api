@@ -66,8 +66,8 @@ const getRewritePost = async (obj) => {
 
 const imageS3Upload = async (imageUrl) => {
   const s3 = new AWS.S3({
-    accessKeyId: env.NEWSTIZ_ACCESS_KEY_ID,
-    secretAccessKey: env.NEWSTIZ_SECRET_KEY_ID,
+    accessKeyId: process.env.NEWSTIZ_ACCESS_KEY_ID,
+    secretAccessKey: process.env.NEWSTIZ_SECRET_KEY_ID,
   });
   const imageFilename = "output_image.png";
 
@@ -93,7 +93,7 @@ const imageS3Upload = async (imageUrl) => {
   return new Promise((resolve, reject) => {
     s3.upload(
       {
-        Bucket: env.BUCKET_NAME,
+        Bucket: process.env.BUCKET_NAME,
         Key: `${moment().format("YYYY")}/${moment().format(
           "MM-DD"
         )}/img_${new Date().getTime()}_${imageFilename}`,
