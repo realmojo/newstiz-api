@@ -80,15 +80,15 @@ const imageS3Upload = async (imageUrl) => {
   const imageResizeWidth = imageMetadata.width;
   const imageResizeHeight = imageMetadata.height - 60;
 
+  const imagePath = "/tmp";
   await sharp(input)
     .resize({
       width: imageResizeWidth,
       height: imageResizeHeight,
       position: "left top",
     })
-    .toFile(imageFilename);
+    .toFile(`${imagePath}/${imageFilename}`);
 
-  const imagePath = `${__dirname}/../..`;
   const imageData = fs.readFileSync(`${imagePath}/${imageFilename}`);
   return new Promise((resolve, reject) => {
     s3.upload(
@@ -184,8 +184,6 @@ const getNewsContent = async (req, res, next) => {
 
     const reWriteItems = await getRewritePost(items);
 
-    // console.log(reWriteItems);
-
     const randomUserInfo = getRandomUser();
     const params = {
       _id: await getNextSequence("postId"),
@@ -199,8 +197,6 @@ const getNewsContent = async (req, res, next) => {
       email: randomUserInfo.email,
       regdate: moment().format("YYYY-MM-DD HH:mm"),
     };
-
-    // console.log(params);
 
     const newPost = new Post(params);
     const result = await newPost.save();
