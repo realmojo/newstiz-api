@@ -2,7 +2,6 @@ const Post = require("../../schemas/Posts");
 const fs = require("fs");
 const AWS = require("aws-sdk");
 const sharp = require("sharp");
-const env = require("dotenv").config().parsed;
 const moment = require("moment");
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -69,13 +68,13 @@ const imageS3Upload = async (imageUrl) => {
     accessKeyId: process.env.NEWSTIZ_ACCESS_KEY_ID,
     secretAccessKey: process.env.NEWSTIZ_SECRET_KEY_ID,
   });
-  const imageFilename = "output_image.png";
+  const imageFilename = "output_image.webp";
 
   // 이미지 다운로드 후 리사이징 아래 로고를 자른다.
   const input = (await axios({ url: imageUrl, responseType: "arraybuffer" }))
     .data;
 
-  const imageInfo = await sharp(input);
+  const imageInfo = await sharp(input).webp({ lossless: true });
   const imageMetadata = await imageInfo.metadata();
   const imageResizeWidth = imageMetadata.width;
   const imageResizeHeight = imageMetadata.height - 60;
