@@ -12,14 +12,26 @@ const getPost = async (req, res) => {
 
 const getPostList = async (req, res) => {
   try {
-    const { category } = req.query;
+    const limit = 10;
+    let { category, page } = req.query;
+    if (!Number(page)) {
+      page = 1;
+    }
+    page = Number(page);
 
     let data = [];
     if (category) {
-      data = await Post.find({ category }).sort({ sort: 1 });
+      data = await Post.find({ category })
+        .skip(limit * (page - 1))
+        .limit(limit)
+        .sort({ _id: -1 });
     } else {
-      data = await Post.find({}).sort({ sort: 1 });
+      data = await Post.find({})
+        .skip(limit * (page - 1))
+        .limit(limit)
+        .sort({ _id: -1 });
     }
+
     return res.status(200).send(data);
   } catch (e) {
     return res.status(500).send({ status: "err", message: e.message });
