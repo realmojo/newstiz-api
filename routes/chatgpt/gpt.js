@@ -147,10 +147,34 @@ const getWikitreeContent = async ($) => {
   for (const tag of tagsWrap) {
     tags.push($(tag).text());
   }
-  const content = contentArea.find("p").text();
+  let content = contentArea.find("p").text();
+  if (content.length > 4000) {
+    content = content.substr(0, 4000);
+  }
 
   const s3ImageUrl = await imageS3Upload(imageUrl);
 
+  return {
+    title,
+    s3ImageUrl,
+    strongTextArr,
+    content,
+    tags,
+  };
+};
+
+const getInvestingContent = async ($) => {
+  const contentArea = $("#leftColumn");
+  const title = contentArea.find("h1").text();
+  const imageUrl = $("#carouselImage")[0].attribs.src;
+  const strongTextArr = [];
+  const tags = [];
+  contentArea.find(".relatedInstrumentsWrapper").remove();
+  let content = contentArea.find(".articlePage > p").text();
+  if (content.length > 3800) {
+    content = content.substr(0, 3800);
+  }
+  const s3ImageUrl = await imageS3Upload(imageUrl);
   return {
     title,
     s3ImageUrl,
@@ -179,6 +203,8 @@ const getNewsContent = async (req, res, next) => {
       items = await getNaverContent($);
     } else if (url.includes("wikitree")) {
       items = await getWikitreeContent($);
+    } else if (url.includes("investing")) {
+      items = await getInvestingContent($);
     }
 
     const reWriteItems = await getRewritePost(items);
@@ -199,7 +225,7 @@ const getNewsContent = async (req, res, next) => {
 
     const newPost = new Post(params);
     const result = await newPost.save();
-    console.log(result, "result");
+    console.log(result, "ok");
 
     return res.status(200).send({ status: "ok", items });
   } catch (e) {

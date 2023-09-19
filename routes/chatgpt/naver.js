@@ -134,9 +134,9 @@ const getEconomyFinanceCrawl = async (req, res) => {
 
     for (const link of links) {
       console.log(link);
-      // await axios(
-      //   `http://localhost:3001/api/chatgpt/content?category=economy&url=${link}`
-      // );
+      await axios(
+        `http://localhost:3001/api/chatgpt/content?category=economy&url=${link}`
+      );
     }
 
     return res.status(200).send({ status: "ok", links });
@@ -175,6 +175,92 @@ const getEconomyLifeCrawl = async (req, res) => {
   }
 };
 
+// const getLifeNormalCrawl = async (req, res) => {
+//   try {
+//     const url =
+//       "https://news.naver.com/main/list.naver?mode=LS2D&mid=shm&sid1=101&sid2=310";
+//     const response = await axios(url);
+//     const $ = cheerio.load(response.data);
+//     const items = $(".type06_headline > li > dl > .photo > a");
+
+//     const links = [];
+//     for (let item of items) {
+//       const link = item.attribs.href;
+//       if (links.indexOf(link) === -1) {
+//         links.push(link);
+//       }
+//     }
+
+//     for (const link of links) {
+//       await axios(
+//         `http://localhost:3001/api/chatgpt/content?category=economy&url=${link}`
+//       );
+//     }
+
+//     return res.status(200).send({ status: "ok", links });
+//   } catch (e) {
+//     console.log(e);
+//     return res.status(500).send({ status: "err", message: e.message });
+//   }
+// };
+
+const getInvestingNewsCrawl = async (req, res) => {
+  try {
+    const url = "https://kr.investing.com/news/most-popular-news";
+    const response = await axios(url);
+    const $ = cheerio.load(response.data);
+    const items = $(".largeTitle > article > a");
+
+    const links = [];
+    for (let item of items) {
+      const link = item.attribs.href;
+      if (links.indexOf(link) === -1 && link.indexOf("news") !== -1) {
+        links.push(`https://kr.investing.com/${link}`);
+      }
+    }
+
+    for (const link of links) {
+      await axios(
+        `http://localhost:3001/api/chatgpt/content?category=economy&url=${link}`
+      );
+    }
+
+    return res.status(200).send({ status: "ok", links });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send({ status: "err", message: e.message });
+  }
+};
+
+const getCryptoNewsCrawl = async (req, res) => {
+  try {
+    const url = "https://kr.investing.com/news/cryptocurrency-news";
+    const response = await axios(url);
+    const $ = cheerio.load(response.data);
+    const items = $(".largeTitle > article > a");
+
+    const links = [];
+    for (let item of items) {
+      const link = item.attribs.href;
+      if (links.indexOf(link) === -1 && link.indexOf("news") !== -1) {
+        links.push(`https://kr.investing.com/${link}`);
+      }
+    }
+
+    for (const link of links) {
+      console.log(link);
+      await axios(
+        `http://localhost:3001/api/chatgpt/content?category=crypto&url=${link}`
+      );
+    }
+
+    return res.status(200).send({ status: "ok", links });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send({ status: "err", message: e.message });
+  }
+};
+
 module.exports = {
   getNaverTopNewsLink,
   getSocialCrawl,
@@ -182,4 +268,6 @@ module.exports = {
   getAmericaWorldCrawl,
   getEconomyFinanceCrawl,
   getEconomyLifeCrawl,
+  getInvestingNewsCrawl,
+  getCryptoNewsCrawl,
 };
