@@ -10,6 +10,15 @@ const getPost = async (req, res) => {
   }
 };
 
+const getPosts = async (req, res) => {
+  try {
+    const data = await Post.find({}).sort({ _id: -1 });
+    return res.status(200).send(data);
+  } catch (e) {
+    return res.status(500).send({ status: "err", message: e.message });
+  }
+};
+
 const getPostList = async (req, res) => {
   try {
     const limit = 24;
@@ -59,4 +68,5 @@ module.exports = {
   getPost,
   getPostList,
   getPostSitemapList,
+  getPosts,
 };
