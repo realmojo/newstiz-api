@@ -12,7 +12,7 @@ const getPost = async (req, res) => {
 
 const getPostList = async (req, res) => {
   try {
-    const limit = 10;
+    const limit = 24;
     let { category, page } = req.query;
     if (!Number(page)) {
       page = 1;
@@ -38,7 +38,25 @@ const getPostList = async (req, res) => {
   }
 };
 
+const getPostSitemapList = async (req, res) => {
+  try {
+    const { startDate } = req.query;
+
+    if (!startDate) {
+      throw new Error("startDate parameter");
+    }
+    const regex = (pattern) => new RegExp(`.*${pattern}.*`);
+    const regdateRegex = regex(startDate); // .*토끼.*
+
+    const data = await Post.find({ regdate: { $regex: regdateRegex } });
+    return res.status(200).send(data);
+  } catch (e) {
+    return res.status(500).send({ status: "err", message: e.message });
+  }
+};
+
 module.exports = {
   getPost,
   getPostList,
+  getPostSitemapList,
 };
