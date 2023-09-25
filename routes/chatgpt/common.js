@@ -19,7 +19,7 @@ const getRandomNumber = (min, max) => {
 };
 
 const getRandomUser = () => {
-  return randomUser[getRandomNumber(0, randomUser.length)];
+  return randomUser[getRandomNumber(0, randomUser.length - 1)];
 };
 
 const shuffle = (array) => {
