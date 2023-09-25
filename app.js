@@ -9,6 +9,7 @@ const port = process.env.PORT || 3001;
 mongoose.connect(process.env.MONGODB_URL).then(() => console.log("Connected!"));
 
 app.use(cors());
+app.use("/api/cron", require("./routes/cron"));
 app.use("/api/ping", require("./routes/common"));
 app.use("/api/newstiz", require("./routes/newstiz"));
 app.use("/api/chatgpt", require("./routes/chatgpt"));
