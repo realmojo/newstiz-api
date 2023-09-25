@@ -1,5 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const BASE_URL = process.env.BASE_URL || "http://localhost:3001";
 
 const getNaverTopNewsLink = async (req, res) => {
   try {
@@ -47,7 +48,7 @@ const getSocialCrawl = async (req, res) => {
     for (const link of links) {
       // console.log(link);
       await axios(
-        `http://localhost:3001/api/chatgpt/content?category=social&url=${link}`
+        `${BASE_URL}/api/chatgpt/content?category=social&url=${link}`
       );
     }
 
@@ -75,9 +76,7 @@ const getAsiaWorldCrawl = async (req, res) => {
     }
 
     for (const link of links) {
-      await axios(
-        `http://localhost:3001/api/chatgpt/content?category=world&url=${link}`
-      );
+      await axios(`${BASE_URL}/api/chatgpt/content?category=world&url=${link}`);
     }
 
     return res.status(200).send({ status: "ok", links });
@@ -104,9 +103,7 @@ const getAmericaWorldCrawl = async (req, res) => {
     }
 
     for (const link of links) {
-      await axios(
-        `http://localhost:3001/api/chatgpt/content?category=world&url=${link}`
-      );
+      await axios(`${BASE_URL}/api/chatgpt/content?category=world&url=${link}`);
     }
 
     return res.status(200).send({ status: "ok", links });
@@ -135,7 +132,7 @@ const getEconomyFinanceCrawl = async (req, res) => {
     for (const link of links) {
       console.log(link);
       await axios(
-        `http://localhost:3001/api/chatgpt/content?category=economy&url=${link}`
+        `${BASE_URL}/api/chatgpt/content?category=economy&url=${link}`
       );
     }
 
@@ -164,7 +161,7 @@ const getEconomyLifeCrawl = async (req, res) => {
 
     for (const link of links) {
       await axios(
-        `http://localhost:3001/api/chatgpt/content?category=economy&url=${link}`
+        `${BASE_URL}/api/chatgpt/content?category=economy&url=${link}`
       );
     }
 
@@ -193,7 +190,7 @@ const getEconomyLifeCrawl = async (req, res) => {
 
 //     for (const link of links) {
 //       await axios(
-//         `http://localhost:3001/api/chatgpt/content?category=economy&url=${link}`
+//         `${BASE_URL}/api/chatgpt/content?category=economy&url=${link}`
 //       );
 //     }
 
@@ -221,7 +218,7 @@ const getInvestingNewsCrawl = async (req, res) => {
 
     for (const link of links) {
       await axios(
-        `http://localhost:3001/api/chatgpt/content?category=economy&url=${link}`
+        `${BASE_URL}/api/chatgpt/content?category=economy&url=${link}`
       );
     }
 
@@ -250,7 +247,7 @@ const getCryptoNewsCrawl = async (req, res) => {
     for (const link of links) {
       console.log(link);
       await axios(
-        `http://localhost:3001/api/chatgpt/content?category=crypto&url=${link}`
+        `${BASE_URL}/api/chatgpt/content?category=crypto&url=${link}`
       );
     }
 
@@ -278,9 +275,7 @@ const getLifeHealthCrawl = async (req, res) => {
     }
 
     for (const link of links) {
-      await axios(
-        `http://localhost:3001/api/chatgpt/content?category=life&url=${link}`
-      );
+      await axios(`${BASE_URL}/api/chatgpt/content?category=life&url=${link}`);
     }
 
     return res.status(200).send({ status: "ok", links });
