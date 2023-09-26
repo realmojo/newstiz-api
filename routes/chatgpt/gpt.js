@@ -184,6 +184,42 @@ const getInvestingContent = async ($) => {
   };
 };
 
+const doNewsContent = async (category, url) => {
+  const response = await axios(url);
+  const $ = cheerio.load(response.data);
+
+  let items = {};
+
+  if (url.includes("naver")) {
+    items = await getNaverContent($);
+  } else if (url.includes("wikitree")) {
+    items = await getWikitreeContent($);
+  } else if (url.includes("investing")) {
+    items = await getInvestingContent($);
+  }
+
+  const reWriteItems = await getRewritePost(items);
+
+  const randomUserInfo = getRandomUser();
+  const params = {
+    _id: await getNextSequence("postId"),
+    category,
+    logo: items.s3ImageUrl,
+    title: items.title,
+    subTitle: items.strongTextArr,
+    content: reWriteItems,
+    tags: items.tags || [],
+    editor: randomUserInfo.editor,
+    email: randomUserInfo.email,
+    regdate: moment().format("YYYY-MM-DD HH:mm"),
+  };
+
+  const newPost = new Post(params);
+  const result = await newPost.save();
+  console.log(result, "ok");
+  return items;
+};
+
 const getNewsContent = async (req, res, next) => {
   try {
     const { url, category } = req.query;
@@ -194,38 +230,7 @@ const getNewsContent = async (req, res, next) => {
       throw new Error("category parameter");
     }
 
-    const response = await axios(url);
-    const $ = cheerio.load(response.data);
-
-    let items = {};
-
-    if (url.includes("naver")) {
-      items = await getNaverContent($);
-    } else if (url.includes("wikitree")) {
-      items = await getWikitreeContent($);
-    } else if (url.includes("investing")) {
-      items = await getInvestingContent($);
-    }
-
-    const reWriteItems = await getRewritePost(items);
-
-    const randomUserInfo = getRandomUser();
-    const params = {
-      _id: await getNextSequence("postId"),
-      category,
-      logo: items.s3ImageUrl,
-      title: items.title,
-      subTitle: items.strongTextArr,
-      content: reWriteItems,
-      tags: items.tags || [],
-      editor: randomUserInfo.editor,
-      email: randomUserInfo.email,
-      regdate: moment().format("YYYY-MM-DD HH:mm"),
-    };
-
-    const newPost = new Post(params);
-    const result = await newPost.save();
-    console.log(result, "ok");
+    const items = await doNewsContent(category, url);
 
     return res.status(200).send({ status: "ok", items });
   } catch (e) {
@@ -237,4 +242,5 @@ const getNewsContent = async (req, res, next) => {
 module.exports = {
   getKeyword,
   getNewsContent,
+  doNewsContent,
 };

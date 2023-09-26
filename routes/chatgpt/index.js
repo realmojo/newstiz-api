@@ -1,18 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const gptController = require("./gpt");
-const naverController = require("./naver");
+const crawlController = require("./crawl");
 
-router.get("/naver/link", naverController.getNaverTopNewsLink);
-router.get("/social", naverController.getSocialCrawl);
-router.get("/asia", naverController.getAsiaWorldCrawl);
-router.get("/america", naverController.getAmericaWorldCrawl);
-router.get("/finance", naverController.getEconomyFinanceCrawl);
-router.get("/life_health", naverController.getLifeHealthCrawl);
-router.get("/economy_life", naverController.getEconomyLifeCrawl);
-// router.get("/life_normal", naverController.getLifeNormalCrawl);
-router.get("/economy_investing", naverController.getInvestingNewsCrawl);
-router.get("/economy_crypto", naverController.getCryptoNewsCrawl);
+router.get("/naver/link", crawlController.getNaverTopNewsLink);
+router.get("/social", crawlController.getSocialCrawl);
+router.get("/asia", crawlController.getAsiaWorldCrawl);
+router.get("/america", crawlController.getAmericaWorldCrawl);
+router.get("/finance", crawlController.getEconomyFinanceCrawl);
+router.get("/life_health", crawlController.getLifeHealthCrawl);
+router.get("/economy_life", crawlController.getEconomyLifeCrawl);
+router.get("/economy_investing", crawlController.getInvestingNewsCrawl);
+router.get("/economy_crypto", crawlController.getCryptoNewsCrawl);
 router.get("/content", gptController.getNewsContent);
 router.get("/keyword", gptController.getKeyword);
 module.exports = router;
