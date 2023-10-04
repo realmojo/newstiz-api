@@ -9,6 +9,7 @@ const {
   doCryptoNewsCrawl,
   doAsiaWorldCrawl,
   doAmericaWorldCrawl,
+  doEntertainCrawl,
 } = require("./doCrawl");
 
 const getNaverTopNewsLink = async (req, res) => {
@@ -118,6 +119,16 @@ const getLifeHealthCrawl = async (req, res) => {
   }
 };
 
+const getEntertainCrawl = async (req, res) => {
+  try {
+    const links = await doEntertainCrawl();
+    return res.status(200).send({ status: "ok", links });
+  } catch (e) {
+    console.log(e);
+    return res.status(500).send({ status: "err", message: e.message });
+  }
+};
+
 module.exports = {
   getNaverTopNewsLink,
   getSocialCrawl,
@@ -128,4 +139,5 @@ module.exports = {
   getInvestingNewsCrawl,
   getCryptoNewsCrawl,
   getLifeHealthCrawl,
+  getEntertainCrawl,
 };

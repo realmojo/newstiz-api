@@ -12,6 +12,7 @@ router.get("/life_health", crawlController.getLifeHealthCrawl);
 router.get("/economy_life", crawlController.getEconomyLifeCrawl);
 router.get("/economy_investing", crawlController.getInvestingNewsCrawl);
 router.get("/economy_crypto", crawlController.getCryptoNewsCrawl);
+router.get("/entertain", crawlController.getEntertainCrawl);
 router.get("/content", gptController.getNewsContent);
 router.get("/keyword", gptController.getKeyword);
 module.exports = router;

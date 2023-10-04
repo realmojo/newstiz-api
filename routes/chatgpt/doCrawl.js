@@ -1,4 +1,5 @@
 const axios = require("axios");
+const moment = require("moment");
 const cheerio = require("cheerio");
 const { doNewsContent } = require("./gpt");
 
@@ -178,6 +179,28 @@ const doLifeHealthCrawl = async () => {
   return links;
 };
 
+const doEntertainCrawl = async () => {
+  const url = `https://entertain.daum.net/ranking/popular?date=${moment()
+    .subtract(2, "days")
+    .format("YYYYMMDD")}`;
+  const response = await axios(url);
+  const $ = cheerio.load(response.data);
+  const items = $(".list_ranking > li > a");
+  const links = [];
+  for (let item of items) {
+    const link = item.attribs.href;
+    if (links.indexOf(link) === -1) {
+      links.push(link);
+    }
+  }
+  for (const link of links) {
+    console.log(link);
+    await doNewsContent("entertain", link);
+    // await axios(`${BASE_URL}/api/chatgpt/content?category=life&url=${link}`);
+  }
+  return links;
+};
+
 module.exports = {
   doSocialCrawl,
   doAsiaWorldCrawl,
@@ -187,4 +210,5 @@ module.exports = {
   doInvestingNewsCrawl,
   doCryptoNewsCrawl,
   doLifeHealthCrawl,
+  doEntertainCrawl,
 };

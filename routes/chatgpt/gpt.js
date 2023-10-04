@@ -79,7 +79,8 @@ const imageS3Upload = async (imageUrl) => {
   const imageResizeWidth = imageMetadata.width;
   const imageResizeHeight = imageMetadata.height - 60;
 
-  const imagePath = "/tmp";
+  // const imagePath = "/tmp";
+  const imagePath = "./";
   await sharp(input)
     .resize({
       width: imageResizeWidth,
@@ -184,6 +185,40 @@ const getInvestingContent = async ($) => {
   };
 };
 
+const getDaumContent = async ($) => {
+  const contentArea = $("#kakaoContent");
+  let title = contentArea.find(".tit_view").text();
+  title = title.split("[")[0]
+    ? title.split("[")[0].trim()
+    : title.split("]")[1].trim();
+  const imageUrl = contentArea.find("img")[0].attribs.src;
+  const strongTextArr = [];
+  const tags = [];
+  let contents = contentArea.find(".article_view > section > p");
+
+  const contentArr = [];
+  for (const item of contents) {
+    const text = $(item).text();
+
+    if (!text.includes("[") && !text.includes("@")) {
+      contentArr.push(text);
+    }
+  }
+  let content = contentArr.join(" ");
+
+  if (content.length > 3800) {
+    content = content.substr(0, 3800);
+  }
+  const s3ImageUrl = await imageS3Upload(imageUrl);
+  return {
+    title,
+    s3ImageUrl,
+    strongTextArr,
+    content,
+    tags,
+  };
+};
+
 const doNewsContent = async (category, url) => {
   const response = await axios(url);
   const $ = cheerio.load(response.data);
@@ -196,28 +231,32 @@ const doNewsContent = async (category, url) => {
     items = await getWikitreeContent($);
   } else if (url.includes("investing")) {
     items = await getInvestingContent($);
+  } else if (url.includes("daum")) {
+    items = await getDaumContent($);
   }
 
-  const reWriteItems = await getRewritePost(items);
+  if (items.content) {
+    const reWriteItems = await getRewritePost(items);
 
-  const randomUserInfo = getRandomUser();
-  const params = {
-    _id: await getNextSequence("postId"),
-    category,
-    logo: items.s3ImageUrl,
-    title: items.title,
-    subTitle: items.strongTextArr,
-    content: reWriteItems,
-    tags: items.tags || [],
-    editor: randomUserInfo.editor,
-    email: randomUserInfo.email,
-    regdate: moment().format("YYYY-MM-DD HH:mm"),
-  };
+    const randomUserInfo = getRandomUser();
+    const params = {
+      _id: await getNextSequence("postId"),
+      category,
+      logo: items.s3ImageUrl,
+      title: items.title,
+      subTitle: items.strongTextArr,
+      content: reWriteItems,
+      tags: items.tags || [],
+      editor: randomUserInfo.editor,
+      email: randomUserInfo.email,
+      regdate: moment().format("YYYY-MM-DD HH:mm"),
+    };
 
-  const newPost = new Post(params);
-  const result = await newPost.save();
-  console.log(result, "ok");
-  return items;
+    const newPost = new Post(params);
+    const result = await newPost.save();
+    console.log(result, "ok");
+    return items;
+  }
 };
 
 const getNewsContent = async (req, res, next) => {
