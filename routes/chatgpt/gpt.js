@@ -6,6 +6,7 @@ const moment = require("moment");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const { getNextSequence, getRandomUser, shuffle } = require("./common");
+const { start } = require("repl");
 
 const getKeyword = async (req, res, next) => {
   try {
@@ -31,7 +32,7 @@ const getRewritePost = async (obj) => {
           messages: [
             {
               role: "user",
-              content: `${obj.content} 위의 내용을 재작성 해줘`,
+              content: `${obj.content} 위의 내용을 뉴스기사 처럼 새롭게 만들어주세요.`,
             },
           ],
         },
@@ -219,13 +220,49 @@ const getDaumContent = async ($) => {
   };
 };
 
+const getNaverEntertainContent = async ($) => {
+  const contentArea = $("#ct");
+  let title = contentArea.find("#title_area").text();
+  title = title.split("[")[0]
+    ? title.split("[")[0].trim()
+    : title.split("]")[1].trim();
+  const imageUrl = contentArea.find("#img1")[0].attribs["data-src"];
+  const strongTextArr = [];
+  const tags = [];
+  let content = contentArea.find("#dic_area");
+
+  content.find("span").remove();
+  content = content.text();
+
+  if (content.includes("[")) {
+    let startIndexOf = content.indexOf("[");
+    let endIndexOf = content.indexOf("]");
+    let findString = content.substr(startIndexOf, endIndexOf - 2);
+    content = content.replace(findString, "");
+  }
+
+  if (content.length > 3800) {
+    content = content.substr(0, 3800);
+  }
+  const s3ImageUrl = await imageS3Upload(imageUrl);
+  return {
+    title,
+    s3ImageUrl,
+    strongTextArr,
+    content,
+    tags,
+  };
+};
+
 const doNewsContent = async (category, url) => {
-  const response = await axios(url);
+  const response = await axios(encodeURI(url));
   const $ = cheerio.load(response.data);
 
   let items = {};
 
-  if (url.includes("naver")) {
+  if (url.includes("entertain")) {
+    items = await getNaverEntertainContent($);
+  } else if (url.includes("naver")) {
     items = await getNaverContent($);
   } else if (url.includes("wikitree")) {
     items = await getWikitreeContent($);
@@ -234,6 +271,8 @@ const doNewsContent = async (category, url) => {
   } else if (url.includes("daum")) {
     items = await getDaumContent($);
   }
+  // console.log(items);
+  // return items;
 
   if (items.content) {
     const reWriteItems = await getRewritePost(items);
