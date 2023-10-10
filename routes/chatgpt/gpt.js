@@ -32,7 +32,7 @@ const getRewritePost = async (obj) => {
           messages: [
             {
               role: "user",
-              content: `${obj.content} 위의 내용을 한국어로 뉴스기사 처럼 새롭게 만들어주세요.`,
+              content: `${obj.content} 위의 내용을 한글로 뉴스기사 처럼 만들어주세요.`,
             },
           ],
         },
