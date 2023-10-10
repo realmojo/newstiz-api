@@ -12,7 +12,6 @@ const {
 cron.schedule("0 4 * * *", async () => {
   console.log("do Socail start");
   await doSocialCrawl();
-  await doEntertainCrawl();
 
   console.log("crawling Socail end");
 });
@@ -40,8 +39,6 @@ cron.schedule("30 5 * * *", async () => {
 cron.schedule("0 6 * * *", async () => {
   console.log("do Crypto start");
   await doCryptoNewsCrawl();
-  await doLifeHealthCrawl();
-  await doEntertainCrawl();
 
   console.log("crawling Crypto end");
 });
@@ -49,7 +46,6 @@ cron.schedule("0 6 * * *", async () => {
 cron.schedule("0 7 * * *", async () => {
   console.log("do Life start");
   await doLifeHealthCrawl();
-  await doEntertainCrawl();
 
   console.log("crawling Life end");
 });
