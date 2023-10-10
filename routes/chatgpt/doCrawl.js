@@ -180,9 +180,9 @@ const doLifeHealthCrawl = async () => {
 };
 
 const doEntertainCrawl = async () => {
-  const url = `https://entertain.daum.net/ranking/popular?date=${moment()
-    .subtract(2, "days")
-    .format("YYYYMMDD")}`;
+  const url = `https://entertain.daum.net/ranking/popular?date=${moment().format(
+    "YYYYMMDD"
+  )}`;
   const response = await axios(url);
   const $ = cheerio.load(response.data);
   const items = $(".list_ranking > li > a");
